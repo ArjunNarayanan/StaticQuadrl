@@ -1,0 +1,13 @@
+name = "StaticQuadrl"
+uuid = "58dac66e-1cdc-4f53-b2ab-a85589ee5d64"
+authors = ["Arjun Narayanan <arjun.narayanan91@gmail.com> and contributors"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.8"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

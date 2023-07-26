@@ -1,3 +1,6 @@
+name = "StaticQuadrl"
+uuid = "c4eb32df-00f7-4732-9928-c243d164a00e"
+
 [deps]
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 RandomQuadMesh = "1033c436-49f1-455f-b2c2-3821fef5dd59"

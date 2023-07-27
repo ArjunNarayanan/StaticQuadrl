@@ -1,5 +1,9 @@
 using PlotQuadMesh
+using QuadMeshGame
 using PyPlot
+using Printf
+
+QM = QuadMeshGame
 PQ = PlotQuadMesh
 #####################################################################################################################
 # PLOTTING STUFF
@@ -43,17 +47,21 @@ function plot_env(
 end
 
 function plot_wrapper(
-    wrapper, 
-    filename = ""; 
+    wrapper; 
+    filename = "", 
     xlim=nothing,
     ylim=nothing,
     smooth_iterations = 5, 
     number_elements = false, 
-    mark_geometric_vertices = false
+    mark_geometric_vertices = false,
     )
     smooth_wrapper!(wrapper, smooth_iterations)
 
-    text = string(wrapper.current_score) * " / " * string(wrapper.opt_score)
+    format_score(s) = isinteger(s) ? @sprintf("%1d", s) : @sprintf("%1.1f", s)
+    cs = format_score(wrapper.current_score)
+    os = format_score(wrapper.opt_score)
+    text = cs * " / " * os
+
 
     internal_order = number_elements
     element_numbers = number_elements ? findall(wrapper.env.mesh.active_quad) : false

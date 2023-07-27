@@ -55,6 +55,7 @@ mutable struct RandPolyEnv
     reward
     cleanup
     round_desired_degree
+    local2global_half_edges
     function RandPolyEnv(
         poly_degree_list, 
         max_actions_factor, 
@@ -74,6 +75,8 @@ mutable struct RandPolyEnv
         reward = 0.0f0
         num_actions = 0
         is_terminated = check_terminated(current_score, opt_score, num_actions, max_actions)
+        local2global_half_edges = zeros(Int, 108)
+
         new(
             poly_degree_list,
             poly_degree, 
@@ -87,7 +90,8 @@ mutable struct RandPolyEnv
             is_terminated, 
             reward, 
             cleanup,
-            round_desired_degree
+            round_desired_degree,
+            local2global_half_edges
         )
     end
 end
@@ -99,7 +103,7 @@ function Base.show(io::IO, wrapper::RandPolyEnv)
     show(io, wrapper.env)
 end
 
-function PPO.reset!(wrapper::RandPolyEnv)
+function reset!(wrapper::RandPolyEnv)
     wrapper.poly_degree = rand(wrapper.poly_degree_list)
     wrapper.max_actions = wrapper.max_actions_factor * wrapper.poly_degree
     mesh, d0 = initialize_random_mesh(

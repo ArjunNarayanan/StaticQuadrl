@@ -1,20 +1,20 @@
 using StaticQuadrl
+using ProximalPolicyOptimization
+PPO = ProximalPolicyOptimization
+SQ = StaticQuadrl
 
 include("plot.jl")
+include("ppo_definitions.jl")
 
-SQ = StaticQuadrl
 
 wrapper = SQ.RandPolyEnv(
     [20],
     3,
     "catmull-clark",
     true,
-    false,
+    true,
 )
+policy = SQ.SimplePolicy(216, 128, 5, SQ.NUM_ACTIONS_PER_EDGE)
 
 
-plot_wrapper(
-    wrapper,
-    number_vertices=true,
-    internal_order=true
-)
+rollouts = PPO.Rollouts("output/model-1")

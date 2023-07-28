@@ -21,6 +21,7 @@ function PPO.step!(wrapper::RandPolyEnv, local_action_index)
 end
 
 function terminate_invalid_environment(wrapper)
+    println("\nTERMINATING INVALID ENVIRONMENT\n")
     opt_return = wrapper.current_score - wrapper.opt_score
     # set the reward such that the normalized reward is -1
     wrapper.reward = -1.0 * opt_return

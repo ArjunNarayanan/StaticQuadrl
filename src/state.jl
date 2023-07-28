@@ -35,7 +35,7 @@ function Flux.cpu(s::StateData)
     )
 end
 
-function state(wrapper)
+function PPO.state(wrapper::RandPolyEnv)
     half_edge_template = QM.level4_half_edge_template(
         wrapper.env.mesh
     )
@@ -81,5 +81,29 @@ function state(wrapper)
         local_half_edges,
         opt_return
     )
+end
+#####################################################################################################################
+
+
+#####################################################################################################################
+# BATCHING STATE
+function PPO.batch_state(state_data_vector::Vector{StateData})
+    features = [s.half_edge_features for s in state_data_vector]
+    half_edge_indices = [s.global_half_edge_indices for s in state_data_vector]
+    opt_return = [s.optimum_return for s in state_data_vector]
+    batch_features = cat(features..., dims=3)
+    batch_half_edge_indices = cat(half_edge_indices..., dims=2)
+    return StateData(batch_features, batch_half_edge_indices, opt_return)
+end
+
+function PPO.number_of_actions_per_state(state::StateData)
+    vs = state.half_edge_features
+    @assert ndims(vs) == 3
+    num_actions = size(vs, 2) * NUM_ACTIONS_PER_EDGE
+    return num_actions
+end
+
+function PPO.batch_advantage(state::StateData, returns)
+    return returns ./ state.optimum_return
 end
 #####################################################################################################################

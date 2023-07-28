@@ -103,7 +103,15 @@ function Base.show(io::IO, wrapper::RandPolyEnv)
     show(io, wrapper.env)
 end
 
-function reset!(wrapper::RandPolyEnv)
+function PPO.is_terminal(wrapper::RandPolyEnv)
+    return wrapper.is_terminated
+end
+
+function PPO.reward(wrapper::RandPolyEnv)
+    return wrapper.reward
+end
+
+function PPO.reset!(wrapper::RandPolyEnv)
     wrapper.poly_degree = rand(wrapper.poly_degree_list)
     wrapper.max_actions = wrapper.max_actions_factor * wrapper.poly_degree
     mesh, d0 = initialize_random_mesh(

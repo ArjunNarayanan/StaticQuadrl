@@ -1,5 +1,5 @@
 function PPO.state(wrapper)
-    return SQ.state(wrapper)
+    return SQ.get_state(wrapper)
 end
 
 function PPO.reset!(wrapper)
@@ -21,6 +21,26 @@ function PPO.action_probabilities(policy, state)
     return SQ.action_probabilities(policy, state)
 end
 
+function PPO.batch_action_probabilities(policy, state)
+    return SQ.batch_action_probabilities(policy, state)
+end
+
 function PPO.step!(wrapper, index)
     SQ.step!(wrapper, index)
+end
+
+function PPO.is_terminal(wrapper)
+    return SQ.is_terminal(wrapper)
+end
+
+function PPO.reward(wrapper)
+    return wrapper.reward
+end
+
+function PPO.batch_state(state_data_vector)
+    return SQ.batch_state(state_data_vector)
+end
+
+function PPO.save_loss(evaluator, loss)
+    SQ.save_loss(evaluator, loss)
 end

@@ -6,9 +6,11 @@ using QuadMeshGame
 using Distributions: Categorical
 using BSON
 using Printf
+using ProximalPolicyOptimization
 
 RQ = RandomQuadMesh
 QM = QuadMeshGame
+PPO = ProximalPolicyOptimization
 
 const NUM_ACTIONS_PER_EDGE = 5
 const NUM_EDGES_PER_ELEMENT = 4
@@ -19,5 +21,6 @@ include("policy.jl")
 include("state.jl")
 include("action_probabilities.jl")
 include("step.jl")
+include("evaluate.jl")
 
 end

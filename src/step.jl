@@ -1,5 +1,5 @@
 function local_half_edge_index_and_action_type(index)
-    local_half_edge = div(index - 1, NUM_EDGES_PER_ELEMENT) + 1
+    local_half_edge = div(index - 1, NUM_ACTIONS_PER_EDGE) + 1
     action_type = rem(index - 1, NUM_ACTIONS_PER_EDGE) + 1
     return local_half_edge, action_type
 end
@@ -11,7 +11,7 @@ function global_quad_and_edge_index(global_half_edge_index)
     return quad, edge
 end
 
-function step!(wrapper, local_action_index)
+function PPO.step!(wrapper::RandPolyEnv, local_action_index)
     @assert !wrapper.is_terminated "Attempting to step in terminated environment with action $action_index"
     local_half_edge, action_type = local_half_edge_index_and_action_type(local_action_index)
     global_half_edge_index = wrapper.local2global_half_edges[local_half_edge]
@@ -33,6 +33,14 @@ function is_valid_mesh(mesh)
     QM.all_active_quad_or_boundary(mesh)
 end
 
+function is_active_quad(mesh, quad)
+    if 0 < quad <= QM.quad_buffer(mesh)
+        return QM.is_active_quad(mesh, quad)
+    else
+        return false
+    end
+end
+
 function step_wrapper!(wrapper, quad, edge, type)
     env = wrapper.env
     previous_score = wrapper.current_score
@@ -47,7 +55,7 @@ function step_wrapper!(wrapper, quad, edge, type)
     if !is_valid_mesh(env.mesh)
         terminate_invalid_environment(wrapper)
         return
-    elseif !QM.is_active_quad(env.mesh, quad)
+    elseif !is_active_quad(env.mesh, quad)
         success = false
     elseif type == 1
         success = QM.step_left_flip!(env, quad, edge)

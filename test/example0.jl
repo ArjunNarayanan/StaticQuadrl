@@ -1,12 +1,10 @@
 using TOML
-using StaticQuadrl
 using ProximalPolicyOptimization
 using Flux
+include("../src/StaticQuadrl.jl")
+
 PPO = ProximalPolicyOptimization
 SQ = StaticQuadrl
-
-# include("plot.jl")
-# include("ppo_definitions.jl")
 
 function initialize_environment(env_config)
     polygon_degree_list = env_config["min_polygon_degree"]:env_config["max_polygon_degree"]
@@ -64,7 +62,6 @@ adam_optimizer = ADAM(lr)
 scheduler = ExpDecay(1f0, decay, decay_step, lr_clip)
 optimizer = Flux.Optimise.Optimiser(adam_optimizer, scheduler)
 
-data_path = joinpath(output_dir, "data")
 
 PPO.ppo_iterate!(
     policy,
@@ -78,5 +75,4 @@ PPO.ppo_iterate!(
     discount,
     epsilon,
     entropy_weight,
-    data_path
 )

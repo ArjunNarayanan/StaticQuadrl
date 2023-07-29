@@ -3,7 +3,7 @@
 title = "StaticQuadrl model-1 config"
 
 [evaluator]
-  output_directory = "output/model-1"
+  output_directory = "output/poly-10-20"
   num_evaluation_trajectories = 100
 
 [policy]
@@ -14,7 +14,7 @@ title = "StaticQuadrl model-1 config"
 
 [environment]
   min_polygon_degree = 10
-  max_polygon_degree = 10
+  max_polygon_degree = 20
   max_actions_factor = 2
   quad_alg = "catmull-clark"
   cleanup = true
@@ -26,11 +26,11 @@ title = "StaticQuadrl model-1 config"
   minibatch_size = 64
   episodes_per_iteration = 200
   epochs_per_iteration = 5
-  number_of_iterations = 1000
+  number_of_iterations = 2000
   entropy = 0.001
 
 [optimizer]
   lr = 1e-4
   decay = 0.95
   decay_step = 3000
-  clip = 1e-6
+  clip = 1.0

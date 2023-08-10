@@ -1,9 +1,8 @@
 # BASELINE MODEL
 
-title = "StaticQuadrl model-1 config"
+title = "Learning on poly degree 10-20"
 
 [evaluator]
-  output_directory = "output/poly-10-20"
   num_evaluation_trajectories = 100
 
 [policy]
@@ -23,7 +22,7 @@ title = "StaticQuadrl model-1 config"
 [PPO]
   epsilon = 0.05
   discount = 1.0
-  minibatch_size = 64
+  minibatch_size = 128
   episodes_per_iteration = 200
   epochs_per_iteration = 5
   number_of_iterations = 2000

@@ -2,6 +2,7 @@ using PlotQuadMesh
 using QuadMeshGame
 using PyPlot
 using Printf
+using Distributions: Categorical
 
 QM = QuadMeshGame
 PQ = PlotQuadMesh
@@ -107,7 +108,7 @@ function plot_trajectory(policy, wrapper, root_directory)
 
     fig_name = "figure-" * lpad(0, 3, "0") * ".png"
     filename = joinpath(root_directory, fig_name)
-    plot_wrapper(wrapper, filename)
+    plot_wrapper(wrapper, filename=filename)
 
     fig_index = 1
     done = PPO.is_terminal(wrapper)
@@ -119,7 +120,7 @@ function plot_trajectory(policy, wrapper, root_directory)
         
         fig_name = "figure-" * lpad(fig_index, 3, "0") * ".png"
         filename = joinpath(root_directory, fig_name)
-        plot_wrapper(wrapper, filename)
+        plot_wrapper(wrapper, filename=filename)
         fig_index += 1
 
         done = PPO.is_terminal(wrapper)

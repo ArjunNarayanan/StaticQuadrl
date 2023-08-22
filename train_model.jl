@@ -29,7 +29,7 @@ function initialize_policy(model_config)
 end
 
 
-ARGS = ["output/poly-10-20/config.toml"]
+# ARGS = ["output/poly-10-20/config.toml"]
 @assert length(ARGS) == 1 "Missing path to config file"
 config_file = ARGS[1]
 println("\t\tUSING CONFIG FILE : ", config_file)
@@ -62,8 +62,6 @@ adam_optimizer = ADAM(lr)
 scheduler = ExpDecay(1f0, decay, decay_step, lr_clip)
 optimizer = Flux.Optimise.Optimiser(adam_optimizer, scheduler)
 
-data_path = joinpath(output_dir, "data")
-
 PPO.ppo_iterate!(
     policy,
     wrapper,
@@ -76,5 +74,4 @@ PPO.ppo_iterate!(
     discount,
     epsilon,
     entropy_weight,
-    data_path
 )

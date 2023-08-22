@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job name:
-#SBATCH --job-name=continuous-degree-entropy
+#SBATCH --job-name=poly-10-20
 #
 # Account:
 #SBATCH --account=fc_dgflow
@@ -31,4 +31,4 @@
 export JULIA_DEPOT_PATH=/global/scratch/users/arjunnarayanan/environments/.julia
 module load julia
 
-julia train_model.jl output/continuous-degree-entropy/config.toml
+julia train_model.jl output/poly-10-20/config.toml

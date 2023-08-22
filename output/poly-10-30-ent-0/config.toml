@@ -24,7 +24,7 @@ title = "Learning on poly degree 10-20"
   discount = 1.0
   minibatch_size = 128
   episodes_per_iteration = 200
-  epochs_per_iteration = 5
+  epochs_per_iteration = 10
   number_of_iterations = 2000
   entropy = 0.0
 

@@ -1,6 +1,11 @@
 /Manifest.toml
 *.bson
 *.csv
+<<<<<<< HEAD
 *.DS_Store
 *.png
 *.out
+=======
+*.out
+*.sh
+>>>>>>> 15495a8 (stopped tracking shell scripts)

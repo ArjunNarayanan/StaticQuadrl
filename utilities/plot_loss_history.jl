@@ -3,8 +3,8 @@ include("../src/StaticQuadrl.jl")
 using PyPlot
 
 
-model_name = ARGS[1]
-input_dir = joinpath("output", model_name)
+model_dir = ARGS[1]
+input_dir = model_dir
 output_dir = joinpath(input_dir, "figures")
 
 if !isdir(output_dir)

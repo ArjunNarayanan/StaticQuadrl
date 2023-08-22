@@ -29,7 +29,6 @@ function initialize_policy(model_config)
 end
 
 
-# ARGS = ["output/poly-10-20/config.toml"]
 @assert length(ARGS) == 1 "Missing path to config file"
 config_file = ARGS[1]
 println("\t\tUSING CONFIG FILE : ", config_file)

@@ -1,6 +1,6 @@
 # BASELINE MODEL
 
-title = "Learning on poly degree 10-50"
+title = "Learning on poly degree 10-20"
 
 [evaluator]
   num_evaluation_trajectories = 100
@@ -13,8 +13,8 @@ title = "Learning on poly degree 10-50"
 
 [environment]
   min_polygon_degree = 10
-  max_polygon_degree = 50
-  max_actions_factor = 3
+  max_polygon_degree = 20
+  max_actions_factor = 2
   quad_alg = "catmull-clark"
   cleanup = true
   round_desired_degree = true
@@ -24,12 +24,12 @@ title = "Learning on poly degree 10-50"
   discount = 1.0
   minibatch_size = 128
   episodes_per_iteration = 200
-  epochs_per_iteration = 10
+  epochs_per_iteration = 5
   number_of_iterations = 2000
-  entropy = 0.005
+  entropy = 0.0
 
 [optimizer]
   lr = 1e-4
-  decay = 0.98
-  decay_step = 5000
+  decay = 0.95
+  decay_step = 3000
   clip = 1e-2

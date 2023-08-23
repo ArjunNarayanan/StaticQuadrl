@@ -87,18 +87,56 @@ function PPO.reset!(wrapper::RandPolyEnv)
     return
 end
 
-function update_env_after_step!(wrapper)
-    if wrapper.cleanup
-        maxsteps = 2 * QM.number_of_quads(wrapper.env.mesh)
-        QM.cleanup_env!(wrapper.env, maxsteps)
-    end
-
+function _update_env_after_step!(wrapper)
     wrapper.current_score = global_score(wrapper.env.vertex_score)
     wrapper.num_actions += 1
-    wrapper.is_terminated = check_terminated(
+
+    if !is_valid_mesh(wrapper.env.mesh)
+        terminate_invalid_environment(wrapper)
+    else
+        wrapper.is_terminated = check_terminated(
         wrapper.current_score, 
         wrapper.opt_score, 
         wrapper.num_actions, 
         wrapper.max_actions
     )
+    end
+
+    if wrapper.cleanup
+        maxsteps = 2 * QM.number_of_quads(wrapper.env.mesh)
+        QM.cleanup_env!(wrapper.env, maxsteps)
+    end
+end
+
+function update_env_after_step!(wrapper, success)
+    previous_score = wrapper.current_score
+    wrapper.current_score = global_score(wrapper.env.vertex_score)
+    wrapper.num_actions += 1
+    is_invalid_mesh = false
+
+    if !is_valid_mesh(wrapper.env.mesh)
+        terminate_invalid_environment(wrapper)
+        is_invalid_mesh = true
+    else 
+        if wrapper.cleanup
+            maxsteps = 2 * QM.number_of_quads(wrapper.env.mesh)
+            QM.cleanup_env!(wrapper.env, maxsteps)
+        end
+
+        wrapper.is_terminated = check_terminated(
+            wrapper.current_score, 
+            wrapper.opt_score, 
+            wrapper.num_actions, 
+            wrapper.max_actions
+        )
+    end
+
+    if !is_invalid_mesh
+        if success
+            wrapper.reward = previous_score - wrapper.current_score
+        else
+            wrapper.reward = NO_ACTION_REWARD
+        end
+    end
+
 end

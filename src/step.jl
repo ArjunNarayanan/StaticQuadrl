@@ -44,7 +44,6 @@ end
 
 function step_wrapper!(wrapper, quad, edge, type)
     env = wrapper.env
-    previous_score = wrapper.current_score
     success = false
 
     # @assert QM.is_active_quad(env.mesh, quad) "Attempting to act on inactive quad $quad with action ($quad, $edge, $type)"
@@ -53,10 +52,7 @@ function step_wrapper!(wrapper, quad, edge, type)
     @assert isapprox(wrapper.opt_score, optimal_score(wrapper.env.vertex_score))
 
 
-    if !is_valid_mesh(env.mesh)
-        terminate_invalid_environment(wrapper)
-        return
-    elseif !is_active_quad(env.mesh, quad)
+    if !is_active_quad(env.mesh, quad)
         success = false
     elseif type == 1
         success = QM.step_left_flip!(env, quad, edge)
@@ -73,12 +69,6 @@ function step_wrapper!(wrapper, quad, edge, type)
         error("Unexpected action type $type")
     end
 
-    update_env_after_step!(wrapper)
-    
-    if success
-        wrapper.reward = previous_score - wrapper.current_score
-    else
-        wrapper.reward = NO_ACTION_REWARD
-    end
+    update_env_after_step!(wrapper, success)
     
 end

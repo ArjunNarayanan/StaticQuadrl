@@ -55,13 +55,14 @@ function plot_wrapper(
     smooth_iterations = 5, 
     number_elements = false, 
     mark_geometric_vertices = false,
+    plot_score = true
     )
     smooth_wrapper!(wrapper, smooth_iterations)
 
     format_score(s) = isinteger(s) ? @sprintf("%1d", s) : @sprintf("%1.1f", s)
     cs = format_score(wrapper.current_score)
     os = format_score(wrapper.opt_score)
-    text = cs * " / " * os
+    text = plot_score ? cs * " / " * os : ""
 
 
     internal_order = number_elements
@@ -101,14 +102,28 @@ function smooth_wrapper!(wrapper, num_iterations = 1)
     end
 end
 
-function plot_trajectory(policy, wrapper, root_directory)
+function plot_trajectory(
+    policy, 
+    wrapper, 
+    root_directory;
+    xlim=nothing,
+    ylim=nothing,
+    plot_score=true
+)
+
     if !isdir(root_directory)
         mkpath(root_directory)
     end
 
     fig_name = "figure-" * lpad(0, 3, "0") * ".png"
     filename = joinpath(root_directory, fig_name)
-    plot_wrapper(wrapper, filename=filename)
+    plot_wrapper(
+        wrapper, 
+        filename=filename,
+        xlim=xlim,
+        ylim=ylim,
+        plot_score=plot_score
+    )
 
     fig_index = 1
     done = PPO.is_terminal(wrapper)
@@ -120,7 +135,7 @@ function plot_trajectory(policy, wrapper, root_directory)
         
         fig_name = "figure-" * lpad(fig_index, 3, "0") * ".png"
         filename = joinpath(root_directory, fig_name)
-        plot_wrapper(wrapper, filename=filename)
+        plot_wrapper(wrapper, filename=filename, xlim=xlim, ylim=ylim, plot_score=plot_score)
         fig_index += 1
 
         done = PPO.is_terminal(wrapper)
@@ -145,3 +160,6 @@ function plot_normalized_returns(ret, dev)
 end
 
 #####################################################################################################################
+
+
+

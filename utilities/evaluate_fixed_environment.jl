@@ -43,10 +43,10 @@ function average_best_returns(policy, env_config, num_samples, num_trajectories)
 end
 
 input_dir = "output/poly-10-20/"
-number_of_trajectories = 100
-max_actions_factor = 4
-min_polygon_degree = 30
-max_polygon_degree = 40
+number_of_trajectories = 10
+max_actions_factor = 5
+min_polygon_degree = 40
+max_polygon_degree = 50
 
 data_filename = joinpath(input_dir, "best_model.bson")
 data = BSON.load(data_filename)[:data];
@@ -60,4 +60,6 @@ env_config["max_actions_factor"] = max_actions_factor
 env_config["min_polygon_degree"] = min_polygon_degree
 env_config["max_polygon_degree"] = max_polygon_degree
 
-ret, dev = average_best_returns(policy, env_config, 10, 100)
+ret, dev = average_best_returns(policy, env_config, 10, number_of_trajectories)
+println("Ret ", ret)
+println("Dev ", dev)

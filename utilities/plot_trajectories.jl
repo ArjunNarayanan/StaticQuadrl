@@ -34,8 +34,8 @@ config = TOML.parsefile(config_file)
 env_config = config["environment"]
 
 env_config["max_actions_factor"] = 4
-env_config["min_polygon_degree"] = 30
-env_config["max_polygon_degree"] = 30
+env_config["min_polygon_degree"] = 10
+env_config["max_polygon_degree"] = 10
 wrapper = initialize_environment(config["environment"])
 ret, dev = SQ.average_normalized_best_returns(
     policy, 

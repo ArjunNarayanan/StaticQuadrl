@@ -20,7 +20,7 @@ function initialize_environment(env_config)
 end
 
 
-input_dir = "output/poly-10-30-ent-2e-2/"
+input_dir = "output/poly-10-20/"
 number_of_trajectories = 100
 max_actions_factor = 4
 
@@ -33,6 +33,8 @@ config = TOML.parsefile(config_file)
 
 env_config = config["environment"]
 env_config["max_actions_factor"] = max_actions_factor
+env_config["min_polygon_degree"] = 30
+env_config["max_polygon_degree"] = 30
 wrapper = initialize_environment(env_config)
 
 ret, dev = SQ.average_normalized_best_returns(policy, wrapper, number_of_trajectories)

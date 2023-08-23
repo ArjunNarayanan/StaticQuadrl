@@ -1,5 +1,6 @@
 using BSON
 using TOML
+using CUDA
 using ProximalPolicyOptimization
 include("../src/StaticQuadrl.jl")
 include("../src/plot.jl")
@@ -18,11 +19,11 @@ function initialize_environment(env_config)
     return env
 end
 
-ARGS = ["poly-10-20", "1"]
+# ARGS = ["poly-10-20", "1"]
 model_name = ARGS[1]
 rollout = ARGS[2]
 
-input_dir = joinpath("output", model_name)
+input_dir = model_name
 data_filename = joinpath(input_dir, "best_model.bson")
 data = BSON.load(data_filename)[:data];
 policy = data["policy"]
@@ -33,6 +34,8 @@ config = TOML.parsefile(config_file)
 env_config = config["environment"]
 
 env_config["max_actions_factor"] = 4
+env_config["min_polygon_degree"] = 30
+env_config["max_polygon_degree"] = 30
 wrapper = initialize_environment(config["environment"])
 ret, dev = SQ.average_normalized_best_returns(
     policy, 
@@ -40,8 +43,6 @@ ret, dev = SQ.average_normalized_best_returns(
     100
 )
 
-rollout = 1
 output_dir = joinpath(input_dir, "figures", "rollout-"*string(rollout))
 PPO.reset!(wrapper)
 plot_trajectory(policy, wrapper, output_dir)
-rollout += 1

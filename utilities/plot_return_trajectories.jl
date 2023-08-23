@@ -42,7 +42,9 @@ end
 
 input_dir = "output/poly-10-30-ent-2e-2/"
 number_of_trajectories = 100
-max_actions_factor = 4
+max_actions_factor = 3
+min_polygon_degree = 10
+max_polygon_degree = 30
 
 data_filename = joinpath(input_dir, "best_model.bson")
 data = BSON.load(data_filename)[:data];
@@ -53,24 +55,29 @@ config = TOML.parsefile(config_file)
 
 env_config = config["environment"]
 env_config["max_actions_factor"] = max_actions_factor
+env_config["min_polygon_degree"] = min_polygon_degree
+env_config["max_polygon_degree"] = max_polygon_degree
 wrapper = initialize_environment(env_config)
 
-trajectories = return_trajectories(policy, wrapper, number_of_trajectories)
-pad_trajectories!(trajectories)
-concat_trajectories = cat(trajectories..., dims=2)
-avg_trajectory = SQ.Flux.mean(concat_trajectories, dims=2)
+ret, dev = SQ.average_normalized_best_returns(policy, wrapper, number_of_trajectories)
 
-fig, ax = subplots()
-for ret in trajectories
-    ax.plot(ret, color = "cornflowerblue", alpha=0.2)
-end
-ax.plot(avg_trajectory, color="royalblue", linewidth=3)
-ax.set_xlabel("Number of steps")
-ax.set_ylabel("Normalized returns")
-ax.set_ylim([0,1])
-ax.grid(true)
-fig.tight_layout()
-fig
 
-output_file = joinpath(input_dir, "figures", "trajectory_history.pdf")
-fig.savefig(output_file)
+# trajectories = return_trajectories(policy, wrapper, number_of_trajectories)
+# pad_trajectories!(trajectories)
+# concat_trajectories = cat(trajectories..., dims=2)
+# avg_trajectory = SQ.Flux.mean(concat_trajectories, dims=2)
+
+# fig, ax = subplots()
+# for ret in trajectories
+#     ax.plot(ret, color = "cornflowerblue", alpha=0.2)
+# end
+# ax.plot(avg_trajectory, color="royalblue", linewidth=3)
+# ax.set_xlabel("Number of steps")
+# ax.set_ylabel("Normalized returns")
+# ax.set_ylim([0,1])
+# ax.grid(true)
+# fig.tight_layout()
+# fig
+
+# output_file = joinpath(input_dir, "figures", "trajectory_history.pdf")
+# fig.savefig(output_file)

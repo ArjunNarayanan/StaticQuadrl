@@ -35,15 +35,18 @@ end
 function average_best_returns(policy, env_config, num_samples, num_trajectories)
     ret = zeros(num_trajectories)
     for idx in 1:num_trajectories
+        println("Evaluating trajectory : ", idx)
         wrapper = initialize_fixed_environment(env_config)
         ret[idx] = best_return_from_rollouts(policy, wrapper, num_samples)
     end
     return SQ.Flux.mean(ret), SQ.Flux.std(ret)
 end
 
-input_dir = "output/poly-10-30-ent-2e-2/"
+input_dir = "output/poly-10-20/"
 number_of_trajectories = 100
 max_actions_factor = 4
+min_polygon_degree = 30
+max_polygon_degree = 40
 
 data_filename = joinpath(input_dir, "best_model.bson")
 data = BSON.load(data_filename)[:data];
@@ -54,5 +57,7 @@ config = TOML.parsefile(config_file)
 
 env_config = config["environment"]
 env_config["max_actions_factor"] = max_actions_factor
+env_config["min_polygon_degree"] = min_polygon_degree
+env_config["max_polygon_degree"] = max_polygon_degree
 
 ret, dev = average_best_returns(policy, env_config, 10, 100)

@@ -11,7 +11,7 @@ function global_quad_and_edge_index(global_half_edge_index)
     return quad, edge
 end
 
-function PPO.step!(wrapper::RandPolyEnv, local_action_index)
+function PPO.step!(wrapper::T, local_action_index) where {T<:AbstractGameEnv}
     @assert !wrapper.is_terminated "Attempting to step in terminated environment with action $action_index"
     local_half_edge, action_type = local_half_edge_index_and_action_type(local_action_index)
     global_half_edge_index = wrapper.local2global_half_edges[local_half_edge]

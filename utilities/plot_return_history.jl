@@ -30,6 +30,8 @@ ax.grid()
 ax.set_ylim([-1,1])
 ax.set_xlabel("PPO Iterations")
 ax.set_ylabel("Mean Returns")
+fig.tight_layout()
 fig
+
 output_file = joinpath(output_dir, "returns.pdf")
 fig.savefig(output_file)

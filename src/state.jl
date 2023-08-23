@@ -35,7 +35,7 @@ function Flux.cpu(s::StateData)
     )
 end
 
-function PPO.state(wrapper::RandPolyEnv)
+function PPO.state(wrapper::T) where {T<:AbstractGameEnv}
     half_edge_template = QM.level4_half_edge_template(
         wrapper.env.mesh
     )

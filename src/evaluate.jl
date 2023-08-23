@@ -111,6 +111,34 @@ function average_normalized_returns_and_action_stats(policy, wrapper, num_trajec
     return mean, std, stats
 end
 
+function single_trajectory_score_history(policy, wrapper)
+    done = PPO.is_terminal(wrapper)
+    
+    T = typeof(wrapper.current_score)
+    score_history = T[]
+
+    while !done
+        state = PPO.state(wrapper) |> gpu
+        probs = PPO.action_probabilities(policy, state) |> cpu
+        action = rand(Categorical(probs))
+
+        PPO.step!(wrapper, action)
+
+        push!(score_history, wrapper.current_score)
+        done = PPO.is_terminal(wrapper)
+    end
+    return score_history
+end
+
+function single_trajectory_normalized_return_history(policy, wrapper)
+    initial_score = wrapper.current_score
+    opt_score = wrapper.opt_score
+
+    current_scores = single_trajectory_score_history(policy, wrapper)
+    normalized_ret = (initial_score .- current_scores) ./ (initial_score - opt_score)
+    return normalized_ret
+end
+
 function best_single_trajectory_return(policy, wrapper)
     done = PPO.is_terminal(wrapper)
 

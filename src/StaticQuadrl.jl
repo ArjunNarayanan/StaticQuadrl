@@ -19,6 +19,7 @@ const NUM_EDGES_PER_TEMPLATE = 108
 
 include("env_utilities.jl")
 include("random_polygon_environment.jl")
+include("fixed_polygon_environment.jl")
 include("policy.jl")
 include("state.jl")
 include("action_probabilities.jl")

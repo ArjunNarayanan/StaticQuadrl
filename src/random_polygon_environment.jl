@@ -24,8 +24,11 @@ mutable struct RandPolyEnv <: AbstractGameEnv
         @assert all(poly_degree_list .> 3)
 
         poly_degree = rand(poly_degree_list)
-        max_actions = max_actions_factor * poly_degree
         mesh, d0 = initialize_random_mesh(poly_degree, quad_alg, round_desired_degree)
+
+        num_elements = QM.number_of_quads(mesh)
+        max_actions = max_actions_factor * num_elements
+        
         env = QM.GameEnv(mesh, d0)
         current_score = global_score(env.vertex_score)
         opt_score = optimal_score(env.vertex_score)
@@ -70,12 +73,16 @@ end
 
 function PPO.reset!(wrapper::RandPolyEnv)
     wrapper.poly_degree = rand(wrapper.poly_degree_list)
-    wrapper.max_actions = wrapper.max_actions_factor * wrapper.poly_degree
+    
     mesh, d0 = initialize_random_mesh(
         wrapper.poly_degree,
         wrapper.quad_alg,
         wrapper.round_desired_degree
     )
+
+    num_elements = QM.number_of_quads(mesh)
+    wrapper.max_actions = wrapper.max_actions_factor * num_elements
+
     wrapper.env = QM.GameEnv(mesh, d0)
     wrapper.current_score = global_score(wrapper.env.vertex_score)
     wrapper.reward = 0

@@ -24,7 +24,7 @@
   episodes_per_iteration = 100
   epochs_per_iteration = 10
   number_of_iterations = 2000
-  entropy = 0.005
+  entropy = 0.01
 
 [optimizer]
   lr = 1e-4

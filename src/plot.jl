@@ -55,9 +55,12 @@ function plot_wrapper(
     smooth_iterations = 5, 
     number_elements = false, 
     mark_geometric_vertices = false,
-    plot_score = true
+    plot_score = true,
+    boundary_smooth_iterations = 2,
     )
+
     smooth_wrapper!(wrapper, smooth_iterations)
+    smooth_boundary!(wrapper, boundary_smooth_iterations)
 
     format_score(s) = isinteger(s) ? @sprintf("%1d", s) : @sprintf("%1.1f", s)
     cs = format_score(wrapper.current_score)
@@ -108,14 +111,15 @@ function plot_trajectory(
     root_directory;
     xlim=nothing,
     ylim=nothing,
-    plot_score=true
+    plot_score=true,
+    extension = ".png"
 )
 
     if !isdir(root_directory)
         mkpath(root_directory)
     end
 
-    fig_name = "figure-" * lpad(0, 3, "0") * ".png"
+    fig_name = "figure-" * lpad(0, 3, "0") * extension
     filename = joinpath(root_directory, fig_name)
     plot_wrapper(
         wrapper, 
@@ -133,7 +137,7 @@ function plot_trajectory(
 
         PPO.step!(wrapper, action)
         
-        fig_name = "figure-" * lpad(fig_index, 3, "0") * ".png"
+        fig_name = "figure-" * lpad(fig_index, 3, "0") * extension
         filename = joinpath(root_directory, fig_name)
         plot_wrapper(wrapper, filename=filename, xlim=xlim, ylim=ylim, plot_score=plot_score)
         fig_index += 1
@@ -163,3 +167,40 @@ end
 
 
 
+#####################################################################################################################
+# Smooth non geometric boundary vertices
+
+function smooth_boundary!(wrapper, num_iter)
+    for iter in 1:num_iter
+        smooth_non_geometric_boundary_vertices!(wrapper.env.mesh)
+    end
+end
+
+function smooth_non_geometric_boundary_vertices!(mesh)
+    vertices = zeros(size(mesh.vertices))
+    smooth_vertices = (.!mesh.is_geometric_vertex) .& (mesh.vertex_on_boundary)
+    for quad in 1:QM.quad_buffer(mesh)
+        if QM.is_active_quad(mesh, quad)
+            for half_edge in 1:4
+                source = QM.vertex(mesh, quad, half_edge)
+                target = QM.vertex(mesh, quad, QM.next(half_edge))
+                
+                if smooth_vertices[source] && !QM.has_neighbor(mesh, quad, half_edge)
+                    vertices[:, source] += mesh.vertices[:, target]
+                end
+
+                if smooth_vertices[target] && !QM.has_neighbor(mesh, quad, half_edge)
+                    vertices[:, target] += mesh.vertices[:, source]
+                end
+
+            end
+        end
+    end
+    # return vertices
+    vertices = vertices/2
+    mask = .!smooth_vertices
+    vertices[:,mask] .= mesh.vertices[:,mask]
+    mesh.vertices .= vertices
+end
+
+#####################################################################################################################

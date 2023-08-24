@@ -22,9 +22,9 @@ end
 
 function terminate_invalid_environment(wrapper)
     println("\nTERMINATING INVALID ENVIRONMENT\n")
-    opt_return = wrapper.current_score - wrapper.opt_score
+    # opt_return = wrapper.current_score - wrapper.opt_score
     # set the reward such that the normalized reward is -1
-    wrapper.reward = -1.0 * opt_return
+    # wrapper.reward = -1.0 * opt_return
     wrapper.is_terminated = true
 end
 
@@ -63,8 +63,14 @@ function step_wrapper!(wrapper, quad, edge, type)
     elseif type == 4
         success = QM.step_collapse!(env, quad, edge)
     elseif type == 5
-        maxsplits = 2*QM.number_of_quads(env.mesh)
-        success = QM.step_global_split_without_loops!(env, quad, edge, maxsplits)
+        try
+            maxsplits = 2*QM.number_of_quads(env.mesh)
+            success = QM.step_global_split_without_loops!(env, quad, edge, maxsplits)
+        catch e
+            success = false
+            # terminate the environment by making num_actions > max_actions
+            wrapper.num_actions = wrapper.max_actions + 1
+        end
     else
         error("Unexpected action type $type")
     end

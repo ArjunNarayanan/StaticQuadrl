@@ -14,9 +14,9 @@ mutable struct RandPolyEnv <: AbstractGameEnv
     round_desired_degree
     local2global_half_edges
     function RandPolyEnv(
-        poly_degree_list, 
-        max_actions_factor, 
-        quad_alg, 
+        poly_degree_list,
+        max_actions_factor,
+        quad_alg,
         cleanup,
         round_desired_degree
     )
@@ -24,7 +24,7 @@ mutable struct RandPolyEnv <: AbstractGameEnv
         @assert all(poly_degree_list .> 3)
 
         poly_degree = rand(poly_degree_list)
-        max_actions = max_actions_factor*poly_degree
+        max_actions = max_actions_factor * poly_degree
         mesh, d0 = initialize_random_mesh(poly_degree, quad_alg, round_desired_degree)
         env = QM.GameEnv(mesh, d0)
         current_score = global_score(env.vertex_score)
@@ -36,16 +36,16 @@ mutable struct RandPolyEnv <: AbstractGameEnv
 
         new(
             poly_degree_list,
-            poly_degree, 
-            quad_alg, 
+            poly_degree,
+            quad_alg,
             num_actions,
-            max_actions_factor, 
-            max_actions, 
-            env, 
-            current_score, 
-            opt_score, 
-            is_terminated, 
-            reward, 
+            max_actions_factor,
+            max_actions,
+            env,
+            current_score,
+            opt_score,
+            is_terminated,
+            reward,
             cleanup,
             round_desired_degree,
             local2global_half_edges
@@ -72,7 +72,7 @@ function PPO.reset!(wrapper::RandPolyEnv)
     wrapper.poly_degree = rand(wrapper.poly_degree_list)
     wrapper.max_actions = wrapper.max_actions_factor * wrapper.poly_degree
     mesh, d0 = initialize_random_mesh(
-        wrapper.poly_degree, 
+        wrapper.poly_degree,
         wrapper.quad_alg,
         wrapper.round_desired_degree
     )
@@ -95,11 +95,11 @@ function _update_env_after_step!(wrapper)
         terminate_invalid_environment(wrapper)
     else
         wrapper.is_terminated = check_terminated(
-        wrapper.current_score, 
-        wrapper.opt_score, 
-        wrapper.num_actions, 
-        wrapper.max_actions
-    )
+            wrapper.current_score,
+            wrapper.opt_score,
+            wrapper.num_actions,
+            wrapper.max_actions
+        )
     end
 
     if wrapper.cleanup
@@ -112,36 +112,30 @@ function update_env_after_step!(wrapper, success)
     previous_score = wrapper.current_score
     wrapper.current_score = global_score(wrapper.env.vertex_score)
     wrapper.num_actions += 1
-    valid_mesh = true
+
+    wrapper.is_terminated = check_terminated(
+        wrapper.current_score,
+        wrapper.opt_score,
+        wrapper.num_actions,
+        wrapper.max_actions
+    )
+
+    if success
+        wrapper.reward = previous_score - wrapper.current_score
+    else
+        wrapper.reward = NO_ACTION_REWARD
+    end
 
     if !is_valid_mesh(wrapper.env.mesh)
         terminate_invalid_environment(wrapper)
-        valid_mesh = false
-    else 
+    else
         if wrapper.cleanup
             try
                 maxsteps = 2 * QM.number_of_quads(wrapper.env.mesh)
                 QM.cleanup_env!(wrapper.env, maxsteps)
             catch e
                 terminate_invalid_environment(wrapper)
-                valid_mesh = false
             end
-        end
-    end
-
-    if valid_mesh
-        
-        wrapper.is_terminated = check_terminated(
-            wrapper.current_score, 
-            wrapper.opt_score, 
-            wrapper.num_actions, 
-            wrapper.max_actions
-        )
-
-        if success
-            wrapper.reward = previous_score - wrapper.current_score
-        else
-            wrapper.reward = NO_ACTION_REWARD
         end
     end
 

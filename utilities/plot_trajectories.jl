@@ -19,7 +19,7 @@ function initialize_environment(env_config)
     return env
 end
 
-# ARGS = ["poly-10-20", "1"]
+ARGS = ["output/poly-10-20", "10"]
 model_name = ARGS[1]
 rollout = ARGS[2]
 
@@ -34,8 +34,8 @@ config = TOML.parsefile(config_file)
 env_config = config["environment"]
 
 env_config["max_actions_factor"] = 4
-env_config["min_polygon_degree"] = 10
-env_config["max_polygon_degree"] = 10
+env_config["min_polygon_degree"] = 30
+env_config["max_polygon_degree"] = 30
 wrapper = initialize_environment(config["environment"])
 ret, dev = SQ.average_normalized_best_returns(
     policy, 
@@ -45,4 +45,4 @@ ret, dev = SQ.average_normalized_best_returns(
 
 output_dir = joinpath(input_dir, "figures", "rollout-"*string(rollout))
 PPO.reset!(wrapper)
-plot_trajectory(policy, wrapper, output_dir)
+plot_trajectory(policy, wrapper, output_dir, extension = ".pdf")

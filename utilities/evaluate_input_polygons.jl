@@ -40,7 +40,7 @@ plot_wrapper(
 data = BSON.load(model_checkpoint)[:data];
 policy = data["policy"]
 
-rollout = 2
+rollout = 5
 output_dir = joinpath(input_dir, "rollout-"*string(rollout))
 PPO.reset!(wrapper)
 plot_trajectory(
@@ -49,7 +49,8 @@ plot_trajectory(
     output_dir,
     ylim=[-0.5,2.5],
     xlim=[-0.5,2.5],
-    plot_score=false
+    plot_score=false,
+    extension = ".pdf"
 )
 
 plot_wrapper(
@@ -59,6 +60,6 @@ plot_wrapper(
     plot_score=false
 )
 
-vertices = smooth_non_geometric_boundary_vertices!(wrapper.env.mesh)
+smooth_non_geometric_boundary_vertices!(wrapper.env.mesh)
 
 # ret, dev = SQ.average_normalized_best_returns(policy, wrapper, number_of_trajectories)

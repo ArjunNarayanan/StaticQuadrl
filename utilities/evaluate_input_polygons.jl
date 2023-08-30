@@ -19,12 +19,12 @@ function initialize_polygon_environment(polygon_config, max_actions, cleanup=tru
     return env
 end
 
-model_checkpoint = "output/poly-10-20/best_model.bson"
-input_dir = "polygons/L-domain"
-polygon_config_file = joinpath(input_dir, "L-domain.toml")
+model_checkpoint = "output/poly-10-30-ent-2e-2/best_model.bson"
+input_dir = "polygons/double-notch"
+polygon_config_file = joinpath(input_dir, "double-notch.toml")
 polygon_config = TOML.parsefile(polygon_config_file)
 # number_of_trajectories = 100
-max_actions = 20
+max_actions = 50
 
 wrapper = initialize_polygon_environment(polygon_config, max_actions)
 PPO.reset!(wrapper)
@@ -32,34 +32,34 @@ PPO.reset!(wrapper)
 
 plot_wrapper(
     wrapper,
-    ylim=[-0.5,2.5],
-    xlim=[-0.5,2.5],
+    ylim=[-0.1,1.1],
+    xlim=[-0.1,1.1],
     plot_score=false
 )
 
 data = BSON.load(model_checkpoint)[:data];
 policy = data["policy"]
 
-rollout = 5
+rollout = 2
 output_dir = joinpath(input_dir, "rollout-"*string(rollout))
 PPO.reset!(wrapper)
 plot_trajectory(
     policy, 
     wrapper, 
     output_dir,
-    ylim=[-0.5,2.5],
-    xlim=[-0.5,2.5],
+    ylim=[-0.1,1.1],
+    xlim=[-0.1,1.1],
     plot_score=false,
     extension = ".pdf"
 )
 
-plot_wrapper(
-    wrapper,
-    ylim=[-0.5,2.5],
-    xlim=[-0.5,2.5],
-    plot_score=false
-)
+# plot_wrapper(
+#     wrapper,
+#     ylim=[-0.5,2.5],
+#     xlim=[-0.5,2.5],
+#     plot_score=false
+# )
 
-smooth_non_geometric_boundary_vertices!(wrapper.env.mesh)
+# smooth_non_geometric_boundary_vertices!(wrapper.env.mesh)
 
 # ret, dev = SQ.average_normalized_best_returns(policy, wrapper, number_of_trajectories)

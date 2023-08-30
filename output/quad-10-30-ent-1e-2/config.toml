@@ -21,7 +21,7 @@
   epsilon = 0.05
   discount = 1.0
   minibatch_size = 128
-  episodes_per_iteration = 100
+  episodes_per_iteration = 50
   epochs_per_iteration = 10
   number_of_iterations = 2000
   entropy = 0.01

@@ -10,7 +10,7 @@
   output_channels = 5
 
 [environment]
-  min_polygon_degree = 10
+  min_polygon_degree = 4
   max_polygon_degree = 30
   max_actions_factor = 2
   quad_alg = "catmull-clark"
@@ -21,7 +21,7 @@
   epsilon = 0.05
   discount = 1.0
   minibatch_size = 128
-  episodes_per_iteration = 100
+  episodes_per_iteration = 50
   epochs_per_iteration = 10
   number_of_iterations = 2000
   entropy = 0.01

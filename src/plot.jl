@@ -169,7 +169,6 @@ end
 
 #####################################################################################################################
 # Smooth non geometric boundary vertices
-
 function smooth_boundary!(wrapper, num_iter)
     for iter in 1:num_iter
         smooth_non_geometric_boundary_vertices!(wrapper.env.mesh)

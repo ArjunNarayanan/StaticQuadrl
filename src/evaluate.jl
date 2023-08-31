@@ -8,7 +8,7 @@ mutable struct SaveBestModel
     mean_returns
     std_returns
     action_counts
-    function SaveBestModel(root_dir, num_trajectories, filename = "best_model.bson")
+    function SaveBestModel(root_dir, num_trajectories, filename="best_model.bson")
         if !isdir(root_dir)
             mkpath(root_dir)
         end
@@ -113,7 +113,7 @@ end
 
 function single_trajectory_score_history(policy, wrapper)
     done = PPO.is_terminal(wrapper)
-    
+
     T = typeof(wrapper.current_score)
     score_history = T[]
 
@@ -164,7 +164,7 @@ function best_normalized_single_trajectory_return(policy, wrapper)
         return 1.0
     else
         ret = best_single_trajectory_return(policy, wrapper)
-        return ret/max_return
+        return ret / max_return
     end
 end
 
@@ -175,4 +175,49 @@ function average_normalized_best_returns(policy, wrapper, num_trajectories)
         ret[idx] = best_normalized_single_trajectory_return(policy, wrapper)
     end
     return Flux.mean(ret), Flux.std(ret)
+end
+
+function best_normalized_return(policy, wrapper, num_trajectories)
+    best_return = -Inf
+    for idx = 1:num_trajectories
+        PPO.reset!(wrapper)
+        ret = best_normalized_single_trajectory_return(policy, wrapper)
+        best_return = max(best_return, ret)
+    end
+    return best_return
+end
+
+function best_state_in_rollout(wrapper, policy)
+    best_wrapper = deepcopy(wrapper)
+    minscore = wrapper.current_score
+    done = PPO.is_terminal(wrapper)
+
+    while !done
+        probs = PPO.action_probabilities(policy, PPO.state(wrapper))
+        action = rand(Categorical(probs))
+
+        PPO.step!(wrapper, action)
+        done = PPO.is_terminal(wrapper)
+
+        if wrapper.current_score < minscore
+            minscore = wrapper.current_score
+            best_wrapper = deepcopy(wrapper)
+        end
+    end
+
+    return best_wrapper
+end
+
+function best_state_in_rollouts(wrapper, policy, num_trajectories)
+    best_wrapper = deepcopy(wrapper)
+    minscore = best_wrapper.current_score
+    for idx in 1:num_trajectories
+        PPO.reset!(wrapper)
+        new_wrapper = best_state_in_rollout(wrapper, policy)
+        if new_wrapper.current_score < minscore
+            minscore = new_wrapper.current_score
+            best_wrapper = new_wrapper
+        end
+    end
+    return best_wrapper
 end
